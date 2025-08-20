@@ -19,10 +19,4 @@ class HelloController {
         val number3: Int = number1 + number2
         return mapOf("message" to number3)
     }
-
-    @GetMapping("/")
-    fun health(): Map<String, Any> {
-        return mapOf("status" to "ok")
-    }
-
 }

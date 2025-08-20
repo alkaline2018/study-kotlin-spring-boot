@@ -26,19 +26,36 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+
       - name: Grant execute permission for Gradlew
         run: chmod +x gradlew
+
       - uses: gradle/actions/setup-gradle@v3
         with:
           cache-disabled: true
-      - run: ./gradlew clean test
-#      - run: ./gradlew bootJar
 
+      - name: Run tests
+        run: ./gradlew clean test
+
+      - name: Build JAR
+        run: ./gradlew bootJar
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
   deploy:
     needs: build-test
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4

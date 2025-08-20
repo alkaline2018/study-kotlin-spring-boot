@@ -57,34 +57,45 @@ jobs:
           name: app-jar
           path: build/libs
 
+      # ✅ 단 하나의 JAR를 루트로 복사(=> Dockerfile이 항상 찾을 수 있게)
+      - name: Prepare app.jar
+        shell: bash
+        run: |
+          ls -l build/libs || true
+          # plain 제외하고 싶으면 아래 grep -v 'plain' 유지
+          JAR=$(ls -1 build/libs/*.jar | grep -v 'plain' | head -n1)
+          if [ -z "$JAR" ]; then echo "No JAR found"; exit 1; fi
+          cp "$JAR" app.jar
+          ls -l app.jar
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build & Push image (tag = commit SHA)
+      - name: Build & Push image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${{ github.sha }}
+          tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:${{ github.sha }}
 
-      - name: Render task definition (replace image)
+      - name: Render task definition
         id: render
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: .aws/task-definition.json
           container-name: app
-          image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${{ github.sha }}
+          image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:${{ github.sha }}
 
       - name: Deploy to ECS (rolling)
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.render.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ secrets.ECS_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true

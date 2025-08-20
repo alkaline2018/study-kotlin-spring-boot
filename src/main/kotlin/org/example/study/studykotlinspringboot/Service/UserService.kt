@@ -10,5 +10,24 @@ class UserService(
 ) {
     fun getAllUsers(): List<User> = userRepository.findAll()
 
-    fun getUserById(id: Long): User? = userRepository.findById(id)
+    fun getUserById(id: Long): User =
+        userRepository.findById(id).orElseThrow { NoSuchElementException("User not found: $id") }
+
+    fun createUser(user: User): User = userRepository.save(user)
+
+    fun updateUser(id: Long, updatedUser: User): User {
+        val existingUser = getUserById(id)
+        val newUser = existingUser.copy(
+            name = updatedUser.name,
+            email = updatedUser.email
+        )
+        return userRepository.save(newUser)
+    }
+
+    fun deleteUser(id: Long) {
+        if (!userRepository.existsById(id)) {
+            throw NoSuchElementException("User not found: $id")
+        }
+        userRepository.deleteById(id)
+    }
 }

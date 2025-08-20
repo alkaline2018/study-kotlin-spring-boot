@@ -1,7 +1,16 @@
 package org.example.study.studykotlinspringboot.model
 
+import jakarta.persistence.*
+
+@Entity
+@Table(name = "users")
 data class User(
-    val id: Long,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+
+    @Column(nullable = false)
     val name: String,
+
+    @Column(nullable = false, unique = true)
     val email: String
 )

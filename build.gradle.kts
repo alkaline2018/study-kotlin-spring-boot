@@ -49,5 +49,7 @@ tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar
         dependencies {
             intoLayer("dependencies")
         }
+        layerOrder.set(listOf("dependencies", "spring-boot-loader", "snapshot-dependencies",
+            "application"))
     }
 }

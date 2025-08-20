@@ -2,7 +2,8 @@
 FROM gradle:8.10.2-jdk21 AS builder
 WORKDIR /app
 COPY . .
-RUN gradle bootJar --no-daemon
+RUN chmod +x gradlew
+RUN ./gradlew bootJar --no-daemon --stacktrace
 
 # 2단계: 실행 이미지
 FROM eclipse-temurin:21-jre-alpine

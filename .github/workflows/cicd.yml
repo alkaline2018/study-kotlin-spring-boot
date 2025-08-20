@@ -32,7 +32,7 @@ jobs:
         with:
           cache-disabled: true
       - run: ./gradlew clean test
-      - run: ./gradlew bootJar
+#      - run: ./gradlew bootJar
 
   deploy:
     needs: build-test

@@ -18,6 +18,14 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val userService: UserService
 ) {
+    @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchElementException::class)
+    fun handleNotFound(ex: NoSuchElementException): org.springframework.http.ResponseEntity<Map<String, String>> {
+        val body = mapOf("message" to (ex.message ?: "Not found"))
+        return org.springframework.http.ResponseEntity
+            .status(org.springframework.http.HttpStatus.NOT_FOUND)
+            .body(body)
+    }
+
 
     @GetMapping
     fun getUsers(): List<User> =

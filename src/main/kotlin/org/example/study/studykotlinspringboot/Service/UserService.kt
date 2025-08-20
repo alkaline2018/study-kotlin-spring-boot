@@ -1,6 +1,8 @@
 package org.example.study.studykotlinspringboot.Service
 
 import org.example.study.studykotlinspringboot.Repository.UserRepository
+import org.example.study.studykotlinspringboot.controller.dto.UserCreateRequest
+import org.example.study.studykotlinspringboot.controller.dto.UserUpdateRequest
 import org.example.study.studykotlinspringboot.model.User
 import org.springframework.stereotype.Service
 
@@ -13,15 +15,18 @@ class UserService(
     fun getUserById(id: Long): User =
         userRepository.findById(id).orElseThrow { NoSuchElementException("User not found: $id") }
 
-    fun createUser(user: User): User = userRepository.save(user)
+    fun createUser(requestBody: UserCreateRequest): User {
+        val newUser = User(name = requestBody.name, email = requestBody.email)
+        return userRepository.save(newUser)
+    }
 
-    fun updateUser(id: Long, updatedUser: User): User {
+    fun updateUser(id: Long, updatedUser: UserUpdateRequest): User {
         val existingUser = getUserById(id)
-        val newUser = existingUser.copy(
+        val updatedUser = existingUser.copy(
             name = updatedUser.name,
             email = updatedUser.email
         )
-        return userRepository.save(newUser)
+        return userRepository.save(updatedUser)
     }
 
     fun deleteUser(id: Long) {

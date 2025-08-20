@@ -1,6 +1,8 @@
 package org.example.study.studykotlinspringboot.controller
 
 import org.example.study.studykotlinspringboot.Service.UserService
+import org.example.study.studykotlinspringboot.controller.dto.UserCreateRequest
+import org.example.study.studykotlinspringboot.controller.dto.UserUpdateRequest
 import org.example.study.studykotlinspringboot.model.User
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,11 +28,11 @@ class UserController(
         userService.getUserById(id)
 
     @PostMapping
-    fun createUser(@RequestBody user: User): User =
-        userService.createUser(user)
+    fun createUser(@RequestBody requestBody: UserCreateRequest): User =
+        userService.createUser(requestBody)
 
     @PutMapping("/{id}")
-    fun updateUser(@PathVariable id: Long, @RequestBody user: User): User =
+    fun updateUser(@PathVariable id: Long, @RequestBody user: UserUpdateRequest): User =
         userService.updateUser(id, user)
 
     @DeleteMapping("/{id}")

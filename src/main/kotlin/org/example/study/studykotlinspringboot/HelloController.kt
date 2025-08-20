@@ -10,6 +10,10 @@ class HelloController {
     fun hello(@RequestParam name: String = "world") =
         mapOf("message" to "Hello, $name")
 
+    @GetMapping("/api/hello2")
+    fun hello2(@RequestParam name: String = "world") =
+        mapOf("message" to "Hello2, $name")
+
     @GetMapping("/api/add")
     fun add(@RequestParam number1: Int, @RequestParam number2: Int): Map<String, Any> {
         val number3: Int = number1 + number2
